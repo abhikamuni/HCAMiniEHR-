@@ -1,0 +1,51 @@
+﻿@page
+@model HCAMiniEHR.Pages.Appointments.CreateModel
+@{
+    ViewData["Title"] = "New Appointment";
+}
+
+<div class="container mt-5">
+    <div class="card shadow-sm" style="max-width: 600px; margin: 0 auto;">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">📅 Book Appointment</h4>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                <input type="hidden" asp-for="PatientId" />
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Date</label>
+                        <input asp-for="SelectedDate" type="date" class="form-control" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Time</label>
+                        <input asp-for="SelectedTime"
+                               type="time"
+                               class="form-control"
+                               asp-format="{0:HH:mm}" />
+                    </div>
+
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Doctor</label>
+                    <div class="input-group">
+                        <span class="input-group-text">Dr.</span>
+                        <input asp-for="DoctorName" class="form-control" placeholder="Smith" />
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Reason for Visit</label>
+                    <textarea asp-for="Reason" class="form-control" rows="3" placeholder="Describe symptoms..."></textarea>
+                </div>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <a href="/Patients/Index" class="btn btn-light me-2">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Confirm Booking</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
