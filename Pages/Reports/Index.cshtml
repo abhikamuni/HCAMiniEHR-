@@ -47,12 +47,13 @@
                                 {
                                     <tr>
                                         <td>@item.TestName</td>
-                                        <td>@item.Appointment?.Patient?.LastName, @item.Appointment?.Patient?.FirstName</td>
-                                        <td>@item.OrderDate?.ToString("MM/dd/yyyy")</td>
+                                        <td>@item.PatientName</td>
+                                        <td>@item.DateOrdered</td>
                                         <td><span class="badge bg-warning text-dark">@item.Status</span></td>
                                     </tr>
                                 }
                             </tbody>
+
                         </table>
                     }
                 </div>
@@ -78,6 +79,7 @@
                                     <td>@stat.AppointmentCount</td>
                                 </tr>
                             }
+
                         </tbody>
                     </table>
                 </div>
