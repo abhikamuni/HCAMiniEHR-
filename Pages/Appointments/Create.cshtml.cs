@@ -36,17 +36,29 @@ namespace HCAMiniEHR.Pages.Appointments
 
         public IActionResult OnPost()
         {
-            if (!ModelState.IsValid) return Page();
-
-            // MERGE Date and Time back together
-            // We take the Date from SelectedDate and the Time from SelectedTime
+            // 1. Combine Date and Time
             DateTime finalDateTime = SelectedDate.Date + SelectedTime.TimeOfDay;
 
-            // Call the Stored Procedure with the merged DateTime
-            _repo.AddAppointmentSP(PatientId, finalDateTime, Reason, DoctorName);
+            // RULE: Booking must be in the future
+            if (finalDateTime <= DateTime.Now)
+            {
+                ModelState.AddModelError("SelectedDate", "Appointments must be scheduled for a future date and time.");
+                return Page();
+            }
 
+            // RULE: Check Doctor Availability
+            if (!_repo.IsSlotAvailable(DoctorName, finalDateTime))
+            {
+                ModelState.AddModelError("SelectedTime", $"Dr. {DoctorName} is already booked at {SelectedTime:HH:mm}. Please choose a different time.");
+                return Page();
+            }
+
+            if (!ModelState.IsValid) return Page();
+
+            _repo.AddAppointmentSP(PatientId, finalDateTime, Reason, DoctorName);
             return RedirectToPage("/Patients/Index");
         }
+
     }
 }
 

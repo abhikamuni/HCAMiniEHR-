@@ -4,6 +4,8 @@ namespace HCAMiniEHR.Repositories
 {
     public interface IAppointmentRepository
     {
+        bool IsSlotAvailable(string doctorName, DateTime date);
+
         // Get all appointments (including Patient info)
         List<Appointment> GetAppointmentsByPatientId(int patientId);
 
