@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using HCAMiniEHR.Models;
+using HCAMiniEHR.DTOs; // Add this namespace
 
 namespace HCAMiniEHR.Pages.Reports
 {
@@ -13,26 +14,33 @@ namespace HCAMiniEHR.Pages.Reports
             _context = context;
         }
 
-        // --- Data Containers for our Reports ---
-        public List<LabOrder> PendingLabs { get; set; } = new();
-        public List<DoctorStat> DoctorStats { get; set; } = new();
+        // UPDATED: Using DTOs instead of Entity Models
+        public List<PendingLabDto> PendingLabs { get; set; } = new();
+        public List<DoctorStatsDto> DoctorStats { get; set; } = new();
+
+        // (We can keep this one as Entity for simplicity, or make a DTO if you really want)
         public List<Patient> PatientsNeedingAppointment { get; set; } = new();
 
         public void OnGet()
         {
-            // REPORT 1: Pending Lab Orders (Using Where + Include)
-            // Finds all orders that are not completed yet.
+            // REPORT 1: Pending Labs mapped to DTO
             PendingLabs = _context.LabOrders
                 .Include(l => l.Appointment)
                 .ThenInclude(a => a.Patient)
                 .Where(l => l.Status == "Pending")
+                .Select(l => new PendingLabDto // Projection
+                {
+                    TestName = l.TestName,
+                    PatientName = l.Appointment.Patient.LastName + ", " + l.Appointment.Patient.FirstName,
+                    DateOrdered = l.OrderDate.HasValue ? l.OrderDate.Value.ToString("MM/dd/yyyy") : "N/A",
+                    Status = l.Status
+                })
                 .ToList();
 
-            // REPORT 2: Doctor Productivity (Using GroupBy + Select)
-            // counts how many appointments each doctor has handled.
+            // REPORT 2: Doctor Stats mapped to DTO
             DoctorStats = _context.Appointments
                 .GroupBy(a => a.DoctorName)
-                .Select(g => new DoctorStat
+                .Select(g => new DoctorStatsDto
                 {
                     DoctorName = g.Key ?? "Unassigned",
                     AppointmentCount = g.Count()
@@ -40,20 +48,10 @@ namespace HCAMiniEHR.Pages.Reports
                 .OrderByDescending(d => d.AppointmentCount)
                 .ToList();
 
-            // REPORT 3: Patients with No Future Appointments (Using !Any - "Not Exists")
-            // Finds patients who do NOT have any appointment scheduled in the future.
+            // REPORT 3 (Kept as is)
             PatientsNeedingAppointment = _context.Patients
                 .Where(p => !p.Appointments.Any(a => a.AppointmentDate >= DateTime.Today))
                 .ToList();
         }
-
-        // Simple helper class for the GroupBy report
-        public class DoctorStat
-        {
-            public string DoctorName { get; set; }
-            public int AppointmentCount { get; set; }
-        }
     }
 }
-
-

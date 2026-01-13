@@ -25,41 +25,64 @@ public partial class HCAMiniContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Appointment>(entity =>
-        {
-            entity.HasKey(e => e.AppointmentId).HasName("PK__Appointm__8ECDFCC25C1001C1");
-
-            entity.ToTable("Appointment", "Healthcare", tb => tb.HasTrigger("trg_Appointment_Audit"));
-
-            entity.Property(e => e.Status).HasDefaultValue("Scheduled");
-
-            entity.HasOne(d => d.Patient).WithMany(p => p.Appointments).HasConstraintName("FK_Appointment_Patient");
-        });
-
-        modelBuilder.Entity<AuditLog>(entity =>
-        {
-            entity.HasKey(e => e.LogId).HasName("PK__AuditLog__5E54864888F4FD9F");
-
-            entity.Property(e => e.LogDate).HasDefaultValueSql("(getdate())");
-        });
-
-        modelBuilder.Entity<LabOrder>(entity =>
-        {
-            entity.HasKey(e => e.OrderId).HasName("PK__LabOrder__C3905BCF94261420");
-
-            entity.Property(e => e.OrderDate).HasDefaultValueSql("(getdate())");
-            entity.Property(e => e.Status).HasDefaultValue("Pending");
-
-            entity.HasOne(d => d.Appointment).WithMany(p => p.LabOrders).HasConstraintName("FK_LabOrder_Appointment");
-        });
-
+        // --- 1. Map Patient to [Healthcare].[Patient] ---
         modelBuilder.Entity<Patient>(entity =>
         {
-            entity.HasKey(e => e.PatientId).HasName("PK__Patient__970EC3661E5F4204");
+            // THIS LINE FIXES YOUR ERROR:
+            entity.ToTable("Patient", "Healthcare");
+
+            entity.HasKey(e => e.PatientId);
+            entity.Property(e => e.FirstName).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.LastName).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.DateOfBirth).HasColumnType("date");
+            entity.Property(e => e.Gender).HasMaxLength(10);
+            entity.Property(e => e.Email).HasMaxLength(100);
+            entity.Property(e => e.PhoneNumber).HasMaxLength(20);
         });
 
-        OnModelCreatingPartial(modelBuilder);
+        // --- 2. Map Appointment to [Healthcare].[Appointment] ---
+        modelBuilder.Entity<Appointment>(entity =>
+        {
+            entity.ToTable("Appointment", "Healthcare");
+
+            entity.HasKey(e => e.AppointmentId);
+            entity.Property(e => e.AppointmentDate).HasColumnType("datetime");
+            entity.Property(e => e.Reason).HasMaxLength(200);
+            entity.Property(e => e.Status).HasMaxLength(20).HasDefaultValue("Scheduled");
+            entity.Property(e => e.DoctorName).HasMaxLength(50);
+
+            // Relationship
+            entity.HasOne(d => d.Patient)
+                .WithMany(p => p.Appointments)
+                .HasForeignKey(d => d.PatientId)
+                .OnDelete(DeleteBehavior.ClientSetNull); // Use ClientSetNull to match our "Safe Delete" logic
+        });
+
+        // --- 3. Map LabOrder to [Healthcare].[LabOrder] ---
+        modelBuilder.Entity<LabOrder>(entity =>
+        {
+            entity.ToTable("LabOrder", "Healthcare");
+
+            entity.HasKey(e => e.OrderId);
+            entity.Property(e => e.TestName).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.OrderDate).HasColumnType("datetime").HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.Status).HasMaxLength(20).HasDefaultValue("Pending");
+
+            entity.HasOne(d => d.Appointment)
+                .WithMany()
+                .HasForeignKey(d => d.AppointmentId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // --- 4. Map AuditLog to [Healthcare].[AuditLog] ---
+        modelBuilder.Entity<AuditLog>(entity =>
+        {
+            entity.ToTable("AuditLog", "Healthcare");
+            entity.HasKey(e => e.LogId);
+        });
     }
+
+
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }

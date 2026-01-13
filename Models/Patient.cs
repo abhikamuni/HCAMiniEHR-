@@ -1,34 +1,39 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace HCAMiniEHR.Models;
-
-[Table("Patient", Schema = "Healthcare")]
-public partial class Patient
+namespace HCAMiniEHR.Models
 {
-    [Key]
-    public int PatientId { get; set; }
+    public class Patient
+    {
+        public int PatientId { get; set; }
 
-    [StringLength(50)]
-    public string FirstName { get; set; } = null!;
+        [Required(ErrorMessage = "First Name is required")]
+        [StringLength(50)]
+        // Regex: Only letters (a-z), spaces, and hyphens allowed. No numbers.
+        [RegularExpression(@"^[a-zA-Z\s-]+$", ErrorMessage = "First Name cannot contain numbers or special characters.")]
+        public string FirstName { get; set; }
 
-    [StringLength(50)]
-    public string LastName { get; set; } = null!;
+        [Required(ErrorMessage = "Last Name is required")]
+        [StringLength(50)]
+        // Regex: Same rule for Last Name
+        [RegularExpression(@"^[a-zA-Z\s-]+$", ErrorMessage = "Last Name cannot contain numbers or special characters.")]
+        public string LastName { get; set; }
 
-    public DateOnly DateOfBirth { get; set; }
+        [Required]
+        [DataType(DataType.Date)]
+        // We will add the "No Future Date" check in the PageModel (Step 2)
+        public DateTime DateOfBirth { get; set; }
 
-    [StringLength(10)]
-    public string Gender { get; set; } = null!;
+        [Required]
+        public string Gender { get; set; }
 
-    [StringLength(100)]
-    public string? Email { get; set; }
+        [EmailAddress(ErrorMessage = "Please enter a valid email address (e.g., user@example.com)")]
+        public string? Email { get; set; }
 
-    [StringLength(20)]
-    public string? PhoneNumber { get; set; }
+        [Phone]
+        public string? PhoneNumber { get; set; }
 
-    [InverseProperty("Patient")]
-    public virtual ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
+        // Navigation Property (needed for relationships)
+        public ICollection<Appointment>? Appointments { get; set; }
+    }
 }
+

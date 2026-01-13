@@ -25,17 +25,31 @@ namespace HCAMiniEHR.Pages.Patients
 
         public IActionResult OnPost()
         {
-            if (!ModelState.IsValid)
+            // CUSTOM VALIDATION: Check for Future Date
+            if (Patient.DateOfBirth > DateTime.Today)
             {
-                return Page(); // If validation fails, stay on page
+                // This adds a specific error to the "DateOfBirth" field
+                ModelState.AddModelError("Patient.DateOfBirth", "Date of Birth cannot be in the future.");
             }
 
-            // Save to database via Repository
+            // CUSTOM VALIDATION: Check for reasonable age (optional, e.g., not older than 120)
+            if (Patient.DateOfBirth < DateTime.Today.AddYears(-120))
+            {
+                ModelState.AddModelError("Patient.DateOfBirth", "Please enter a valid Date of Birth.");
+            }
+
+            // Check if any validation failed (Regex, Required, or our Custom Date check)
+            if (!ModelState.IsValid)
+            {
+                return Page(); // Stops saving and shows errors on the form
+            }
+
+            // If valid, save to database
             _repository.AddPatient(Patient);
 
-            // Redirect back to the list
             return RedirectToPage("./Index");
         }
+
     }
 }
 

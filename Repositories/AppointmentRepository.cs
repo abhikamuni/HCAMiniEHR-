@@ -31,5 +31,14 @@ namespace HCAMiniEHR.Repositories
                 patientId, date, reason, doctor
             );
         }
+
+        public bool IsSlotAvailable(string doctorName, DateTime date)
+        {
+            // Check if THIS doctor has ANY appointment at THIS exact time
+            return !_context.Appointments.Any(a =>
+                a.DoctorName == doctorName &&
+                a.AppointmentDate == date);
+        }
+
     }
 }
