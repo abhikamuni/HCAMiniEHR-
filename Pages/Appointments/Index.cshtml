@@ -1,0 +1,58 @@
+﻿@page
+@model HCAMiniEHR.Pages.Appointments.IndexModel
+@{
+    ViewData["Title"] = "All Booked Appointments";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>📅 All Booked Appointments</h2>
+        <a href="/Patients/Index" class="btn btn-primary">+ Book New</a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <table class="table table-hover table-striped align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Date & Time</th>
+                        <th>Patient Name</th>
+                        <th>Doctor</th>
+                        <th>Reason</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var appt in Model.Appointments)
+                    {
+                        <tr>
+                            <td>@appt.AppointmentDate.ToString("MMM dd, yyyy 'at' h:mm tt")</td>
+
+                            <td>
+                                @if (appt.Patient != null)
+                                {
+                                    <span class="fw-bold">@appt.Patient.FirstName @appt.Patient.LastName</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Unknown</span>
+                                }
+                            </td>
+
+                            <td><span class="badge bg-info text-dark">@appt.DoctorName</span></td>
+                            <td>@appt.Reason</td>
+                            <td>@appt.Status</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            @if (Model.Appointments.Count == 0)
+            {
+                <div class="alert alert-warning mt-3 text-center">
+                    No appointments found in the system.
+                </div>
+            }
+        </div>
+    </div>
+</div>

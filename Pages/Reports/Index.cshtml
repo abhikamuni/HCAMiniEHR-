@@ -1,0 +1,110 @@
+﻿@page
+@model HCAMiniEHR.Pages.Reports.IndexModel
+@{
+    ViewData["Title"] = "EHR Reports";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">📊 Analytics Dashboard</h2>
+
+    <ul class="nav nav-tabs" id="reportTabs" role="tablist">
+        <li class="nav-item">
+            <button class="nav-link active" id="labs-tab" data-bs-toggle="tab" data-bs-target="#labs" type="button">🧪 Pending Labs</button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" id="doctors-tab" data-bs-toggle="tab" data-bs-target="#doctors" type="button">👨‍⚕️ Doctor Stats</button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" id="patients-tab" data-bs-toggle="tab" data-bs-target="#patients" type="button">⚠️ Needs Follow-Up</button>
+        </li>
+    </ul>
+
+    <div class="tab-content mt-3" id="reportTabsContent">
+
+        <div class="tab-pane fade show active" id="labs" role="tabpanel">
+            <div class="card shadow-sm border-warning">
+                <div class="card-header bg-warning text-dark">
+                    <strong>Action Required: Pending Lab Results</strong>
+                </div>
+                <div class="card-body">
+                    @if (Model.PendingLabs.Count == 0)
+                    {
+                        <p class="text-muted">No pending orders.</p>
+                    }
+                    else
+                    {
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Test Name</th>
+                                    <th>Patient</th>
+                                    <th>Order Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.PendingLabs)
+                                {
+                                    <tr>
+                                        <td>@item.TestName</td>
+                                        <td>@item.PatientName</td>
+                                        <td>@item.DateOrdered</td>
+                                        <td><span class="badge bg-warning text-dark">@item.Status</span></td>
+                                    </tr>
+                                }
+                            </tbody>
+
+                        </table>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="doctors" role="tabpanel">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Appointments per Doctor</h5>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Doctor Name</th>
+                                <th>Total Appointments</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var stat in Model.DoctorStats)
+                            {
+                                <tr>
+                                    <td>@stat.DoctorName</td>
+                                    <td>@stat.AppointmentCount</td>
+                                </tr>
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="patients" role="tabpanel">
+            <div class="card shadow-sm border-danger">
+                <div class="card-header bg-danger text-white">
+                    <strong>Patients with No Upcoming Appointments</strong>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        @foreach (var p in Model.PatientsNeedingAppointment)
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                @p.FirstName @p.LastName
+                                <a href="/Appointments/Create?patientId=@p.PatientId" class="btn btn-sm btn-outline-danger">Book Now</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
