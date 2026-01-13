@@ -12,41 +12,54 @@
 <div class="container">
     <div class="row g-4">
 
-        <div class="col-md-4">
+        <div class="col-md-6 col-lg-3">
             <div class="card h-100 shadow-sm border-0 hover-effect">
                 <div class="card-body text-center">
                     <div class="mb-3">
                         <span style="font-size: 3rem;">👤</span>
                     </div>
-                    <h5 class="card-title">Manage Patients</h5>
-                    <p class="card-text text-muted">Register new patients, update details, or view history.</p>
-                    <a href="/Patients/Index" class="btn btn-outline-primary stretched-link">Go to Patients</a>
+                    <h5 class="card-title">Patients</h5>
+                    <p class="card-text text-muted small">Register new patients or update history.</p>
+                    <a href="/Patients/Index" class="btn btn-outline-primary stretched-link w-100">Manage Patients</a>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-4">
+        <div class="col-md-6 col-lg-3">
             <div class="card h-100 shadow-sm border-0 hover-effect">
                 <div class="card-body text-center">
                     <div class="mb-3">
                         <span style="font-size: 3rem;">📅</span>
                     </div>
-                    <h5 class="card-title">Book Appointment</h5>
-                    <p class="card-text text-muted">Schedule a new visit for an existing patient.</p>
-                    <a href="/Patients/Index" class="btn btn-outline-success stretched-link">Book Now</a>
+                    <h5 class="card-title">Appointments</h5>
+                    <p class="card-text text-muted small">Schedule visits with conflict checking.</p>
+                    <a href="/Patients/Index" class="btn btn-outline-success stretched-link w-100">Book Now</a>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-4">
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 shadow-sm border-0 hover-effect">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <span style="font-size: 3rem;">🧪</span>
+                    </div>
+                    <h5 class="card-title">Lab Services</h5>
+                    <p class="card-text text-muted small">Track orders and view pending results.</p>
+                    <a href="/Reports/Index" class="btn btn-outline-info text-dark stretched-link w-100">Lab Oredrs</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
             <div class="card h-100 shadow-sm border-0 hover-effect">
                 <div class="card-body text-center">
                     <div class="mb-3">
                         <span style="font-size: 3rem;">📊</span>
                     </div>
-                    <h5 class="card-title">Analytics & Reports</h5>
-                    <p class="card-text text-muted">View pending lab orders, doctor stats, and follow-ups.</p>
-                    <a href="/Reports/Index" class="btn btn-outline-warning text-dark stretched-link">View Reports</a>
+                    <h5 class="card-title">Analytics</h5>
+                    <p class="card-text text-muted small">View doctor stats and follow-ups.</p>
+                    <a href="/Reports/Index" class="btn btn-outline-warning text-dark stretched-link w-100">View Reports</a>
                 </div>
             </div>
         </div>
@@ -55,10 +68,10 @@
 
     <div class="row mt-5">
         <div class="col-12">
-            <div class="alert alert-info d-flex align-items-center" role="alert">
-                <div class="me-3" style="font-size: 1.5rem;">ℹ️</div>
+            <div class="alert alert-secondary d-flex align-items-center" role="alert">
+                <div class="me-3" style="font-size: 1.5rem;">🔒</div>
                 <div>
-                    <strong>System Status:</strong> The Audit Log is active. All appointment changes are being tracked in the SQL Database.
+                    <strong>Security Active:</strong> Audit Logs are immutable. Patient deletion is protected by foreign key constraints.
                 </div>
             </div>
         </div>
@@ -67,11 +80,13 @@
 
 <style>
     .hover-effect {
-        transition: transform 0.2s;
+        transition: transform 0.2s, box-shadow 0.2s;
     }
 
         .hover-effect:hover {
             transform: translateY(-5px);
-            background-color: #f8f9fa;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+            background-color: #fcfcfc;
         }
 </style>
+
